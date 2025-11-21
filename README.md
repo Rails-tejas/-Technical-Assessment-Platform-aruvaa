@@ -1,4 +1,4 @@
-echnical Assessment Platform
+Technical Assessment Platform
 A dynamic candidate evaluation system built with Ruby on Rails
 
 📌 Overview

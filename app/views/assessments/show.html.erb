@@ -1,0 +1,115 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="max-w-3xl w-full mx-auto p-8 bg-white shadow-2xl rounded-3xl border border-gray-100 space-y-8 animate-fadeIn">
+
+    <div class="flex items-center justify-between">
+      <h2 class="text-3xl font-bold tracking-tight flex items-center gap-2">
+        <i class="lucide lucide-list-check text-blue-600"></i>
+        Question <%= @index + 1 %> / <%= @assessment.total_questions %>
+      </h2>
+      <!-- Progress Bar Wrapper -->
+      <div class="w-full mt-6">
+        <div class="flex justify-between text-sm font-medium text-gray-600 mb-1">
+          <span>Progress</span>
+          <span><%= @index + 1 %> / <%= @assessment.total_questions %></span>
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div 
+            class="bg-blue-600 h-full rounded-full transition-all duration-500"
+            style="width: <%= ((@index + 1).to_f / @assessment.total_questions) * 100 %>%;">
+          </div>
+        </div>
+      </div>
+
+
+      <div class="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm font-semibold text-gray-700">
+        <i class="lucide lucide-clock"></i>
+        <div id="timer" data-seconds="<%= @remaining_seconds %>">
+          <span id="time_count"><%= @remaining_seconds %></span>s
+        </div>
+      </div>
+    </div>
+
+    <div class="p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 shadow-sm">
+      <p class="text-xl font-semibold text-gray-800 leading-relaxed"><%= @question.question_text %></p>
+    </div>
+
+    <%= form_with url: assessment_answer_path, method: :post, html: { class: "space-y-4" } do %>
+      <% @question.options.each_with_index do |opt, i| %>
+        <label class="flex items-center gap-4 p-4 border rounded-2xl bg-white shadow hover:shadow-md hover:border-blue-400 transition cursor-pointer group">
+          <%= radio_button_tag :selected_answer, opt, (@aq.selected_answer == opt), id: "opt_#{i}", class: "h-5 w-5 text-blue-600 group-hover:scale-110 transition" %>
+          <span class="text-gray-700 text-lg font-medium group-hover:text-blue-600 transition"><%= opt %></span>
+        </label>
+      <% end %>
+
+      <div class="flex items-center justify-between pt-6">
+        <% if @index > 0 %>
+          <%= button_tag name: "nav", value: "previous", id: "prevBtn", class: "px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-xl text-gray-700 font-semibold flex items-center gap-2 shadow" do %>
+            <i class="lucide lucide-arrow-left"></i> Previous
+          <% end %>
+        <% else %>
+          <span></span>
+        <% end %>
+
+        <% if @index < (@assessment.total_questions - 1) %>
+          <%= button_tag name: "nav", value: "next", class: "px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-blue-300" do %>
+            Next <i class="lucide lucide-arrow-right"></i>
+          <% end %>
+        <% end %>
+
+        <% if @index == (@assessment.total_questions - 1) %>
+          <%= button_tag name: "nav", value: "submit", class: "px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-green-300" do %>
+            Submit Test <i class="lucide lucide-check"></i>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <p class="text-right text-gray-500 text-sm">
+      Current score: <span class="font-semibold text-gray-700"><%= session[:score] || 0 %></span>
+    </p>
+
+  </div>
+</div>
+
+<!-- Auto-submit Form -->
+<form id="autoSubmitForm" action="<%= assessment_answer_path %>" method="post" class="hidden">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <%= hidden_field_tag :nav, (@index == (@assessment.total_questions - 1) ? "submit" : "next") %>
+  <%= hidden_field_tag :selected_answer, nil %>
+</form>
+
+<script>
+document.addEventListener("turbo:load", () => {
+  const timerEl = document.getElementById("timer");
+  if (!timerEl) return;
+
+  let time = parseInt(timerEl.dataset.seconds);
+  const display = document.getElementById("time_count");
+  const autoForm = document.getElementById("autoSubmitForm");
+  const prevBtn = document.getElementById("prevBtn");
+
+  const interval = setInterval(() => {
+    time -= 1;
+    display.textContent = time;
+
+    if (time <= 0) {
+      clearInterval(interval);
+      if (prevBtn) prevBtn.disabled = true;
+      autoForm.submit();
+    }
+  }, 1000);
+});
+</script>
+<script>
+document.addEventListener("turbo:load", () => {
+  const bar = document.getElementById("progress-bar");
+  if (bar) {
+    const targetWidth = bar.dataset.width;
+    setTimeout(() => {
+      bar.style.width = targetWidth + "%";
+    }, 100); // Delay ensures animation triggers
+  }
+});
+</script>
+

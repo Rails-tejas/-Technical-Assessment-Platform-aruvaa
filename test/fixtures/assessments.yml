@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  candidate: one
+  total_questions: 1
+  score: 1
+  passed: false
+  status: MyString
+
+two:
+  candidate: two
+  total_questions: 1
+  score: 1
+  passed: false
+  status: MyString

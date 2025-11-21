@@ -1,0 +1,104 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+  <div class="w-full max-w-2xl bg-white shadow-2xl rounded-3xl p-10 border border-gray-200 space-y-8 animate-fadeIn">
+
+    <h1 class="text-4xl font-bold text-gray-900 text-center flex items-center justify-center gap-3">
+      <i class="lucide lucide-terminal text-blue-600"></i>
+      Welcome Candidate
+    </h1>
+
+    <p class="text-center text-gray-600 text-lg">Enter your name and select the programming languages.</p>
+
+    <%= form_with url: start_test_path, method: :post, class: "space-y-6" do |f| %>
+
+      <!-- Name Field -->
+      <div class="space-y-2">
+        <label class="text-gray-700 font-semibold">Your Name</label>
+        <%= text_field_tag :name, nil, placeholder: "Enter your name", class: "w-full px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" %>
+      </div>
+
+      <!-- Custom Dropdown -->
+      <div class="space-y-2">
+        <label class="text-gray-700 font-semibold">Select Programming Languages</label>
+
+        <!-- Dropdown Box -->
+        <div id="dropdownToggle" class="w-full px-4 py-3 border rounded-xl bg-white shadow-sm cursor-pointer flex items-center justify-between">
+          <span class="text-gray-600" id="dropdownPlaceholder">Choose languages</span>
+          <i class="lucide lucide-chevron-down"></i>
+        </div>
+
+        <!-- Hidden Checkbox Container -->
+        <div id="dropdownMenu" class="hidden mt-2 border bg-white rounded-xl shadow-lg p-3 space-y-2 max-h-60 overflow-y-auto">
+          <% @languages.each do |lang| %>
+            <label class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 cursor-pointer">
+              <%= check_box_tag "selected_language_ids[]", lang.id, false, class: "langCheck h-4 w-4 text-blue-600" %>
+              <span class="text-gray-700"><%= lang.name %></span>
+            </label>
+          <% end %>
+        </div>
+
+        <!-- Tags Display -->
+        <div id="selectedTags" class="flex flex-wrap gap-2 mt-2"></div>
+      </div>
+
+      <!-- Submit Button -->
+      <button class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-lg transition flex items-center justify-center gap-2 text-lg">
+        Start Test
+        <i class="lucide lucide-arrow-right"></i>
+      </button>
+
+    <% end %>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const dropdownToggle = document.getElementById("dropdownToggle");
+  const dropdownMenu = document.getElementById("dropdownMenu");
+  const placeholder = document.getElementById("dropdownPlaceholder");
+  const selectedTags = document.getElementById("selectedTags");
+
+  dropdownToggle.addEventListener("click", () => {
+    dropdownMenu.classList.toggle("hidden");
+  });
+
+  document.querySelectorAll(".langCheck").forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      updateTags();
+    });
+  });
+
+  function updateTags() {
+    selectedTags.innerHTML = ""; // clear tags
+
+    const selected = Array.from(document.querySelectorAll(".langCheck:checked"));
+    if (selected.length === 0) {
+      placeholder.textContent = "Choose languages";
+    } else {
+      placeholder.textContent = selected.length + " selected";
+    }
+
+    selected.forEach((cb) => {
+      const tag = document.createElement("span");
+      tag.className = "px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium";
+      tag.textContent = cb.parentElement.innerText.trim();
+      selectedTags.appendChild(tag);
+    });
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.classList.add("hidden");
+    }
+  });
+});
+</script>
+
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.8s ease-out; }
+</style>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+  <head>
+    <title><%= content_for(:title) || "Tech Assessment" %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <!-- Icons -->
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <!-- Tailwind + Rails Assets -->
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+  </head>
+
+  <body class="min-h-screen flex flex-col text-gray-800">
+
+    <!-- Simple Navbar -->
+    <header class="w-full bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+          <i data-lucide="cpu" class="w-5 h-5 text-blue-600"></i>
+          Tech Assessment
+        </h1>
+        <span class="text-sm text-gray-500"><%= Time.current.strftime('%b %d, %Y') %></span>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 py-10 px-4 md:px-8">
+      <div class="max-w-5xl mx-auto">
+        <%= yield %>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("turbo:load", () => {
+        lucide.createIcons();
+      });
+    </script>
+
+  </body>
+</html>

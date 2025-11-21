@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  assessment: one
+  question: one
+  selected_answer: MyString
+  correct: false
+
+two:
+  assessment: two
+  question: two
+  selected_answer: MyString
+  correct: false
